@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Статус — СК Держава{% endblock %}
+{% block content %}<div class="narrow-page"><a class="back-link" href="{{ url_for('statuses_list') }}">← К статусам</a><h1>{{ 'Редактирование статуса' if item else 'Новый статус' }}</h1>
+<form method="post" class="form-card form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Название<input name="name" value="{{ item.name if item else '' }}" required></label>
+<label>Описание<textarea name="description">{{ item.description if item else '' }}</textarea></label>
+<div class="form-actions"><a class="button button-secondary" href="{{ url_for('statuses_list') }}">Отмена</a><button class="button button-primary">Сохранить</button></div></form></div>{% endblock %}
