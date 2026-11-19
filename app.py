@@ -222,8 +222,38 @@ def request_detail(request_id):
            WHERE h.request_id=%s ORDER BY h.changed_at, h.history_id""", (request_id,)
     )
     repair = query_one("SELECT * FROM repairs WHERE request_id=%s", (request_id,))
+    employees = query_all(
+        "SELECT employee_id, full_name FROM employees WHERE is_active=TRUE ORDER BY full_name"
+    ) if role == "admin" else []
     return render_template("request_detail.html", item=item, history=history, repair=repair,
-                           can_manage=(role in {"admin", "engineer"}))
+                           employees=employees, can_manage=(role in {"admin", "engineer"}))
+
+
+@app.post("/requests/<int:request_id>/assign")
+@roles_required("admin")
+def assign_engineer(request_id):
+    raw_employee_id = request.form.get("employee_id", "").strip()
+    employee_id = None
+    if raw_employee_id:
+        try:
+            employee_id = int(raw_employee_id)
+        except ValueError:
+            abort(400)
+        employee = query_one(
+            "SELECT employee_id FROM employees WHERE employee_id=%s AND is_active=TRUE",
+            (employee_id,)
+        )
+        if not employee:
+            flash("Выбранный сотрудник не найден или неактивен.", "error")
+            return redirect(url_for("request_detail", request_id=request_id))
+    result = execute(
+        "UPDATE repair_requests SET assigned_employee_id=%s, updated_at=CURRENT_TIMESTAMP WHERE request_id=%s RETURNING request_id",
+        (employee_id, request_id)
+    )
+    if not result:
+        abort(404)
+    flash("Ответственный инженер обновлён.", "success")
+    return redirect(url_for("request_detail", request_id=request_id))
 
 
 @app.post("/requests/<int:request_id>/status")
