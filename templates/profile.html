@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Профиль — СК Держава{% endblock %}
+{% block content %}
+<div class="narrow-page"><div class="page-heading compact"><div><div class="eyebrow"><span class="eyebrow-line"></span> ЛИЧНЫЙ КАБИНЕТ</div><h1>Профиль</h1><p class="muted">Информация об учётной записи.</p></div>{% if session.get('role') != 'admin' %}<a class="button button-primary" href="{{ url_for('edit_profile') }}">Редактировать</a>{% endif %}</div>
+<div class="panel-card"><dl class="detail-list"><dt>Имя / организация</dt><dd>{{ profile.name or session.get('full_name') }}</dd><dt>Email</dt><dd>{{ profile.email or session.get('email') }}</dd><dt>Телефон</dt><dd>{{ profile.phone or '—' }}</dd><dt>Контактное лицо</dt><dd>{{ profile.contact_person or '—' }}</dd><dt>Адрес</dt><dd>{{ profile.address or '—' }}</dd><dt>Должность</dt><dd>{{ profile.position or '—' }}</dd><dt>Специализация</dt><dd>{{ profile.specialization or '—' }}</dd><dt>Дата регистрации</dt><dd>{{ profile.registration_date or '—' }}</dd></dl></div></div>
+{% endblock %}
