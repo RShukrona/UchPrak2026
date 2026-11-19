@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Рабочая панель — СК Держава{% endblock %}
+{% block content %}
+<h1>Рабочая панель</h1>
+{% if mode == 'admin' %}
+<div class="stats-grid">
+  <div class="stat"><span>Клиенты</span><strong>{{ stats.clients_count }}</strong></div>
+  <div class="stat"><span>Оборудование</span><strong>{{ stats.equipment_count }}</strong></div>
+  <div class="stat"><span>Всего заявок</span><strong>{{ stats.requests_count }}</strong></div>
+  <div class="stat"><span>Активные заявки</span><strong>{{ stats.active_count }}</strong></div>
+</div>
+<h2>Последние заявки</h2>
+{% elif mode == 'engineer' %}
+<p class="muted">Заявки, назначенные на вашу учётную запись.</p><h2>Мои заявки</h2>
+{% else %}
+<div class="section-heading"><h2>Моё оборудование</h2><a class="button" href="{{ url_for('new_request') }}">Создать заявку</a></div>
+<div class="table-wrap"><table><thead><tr><th>Оборудование</th><th>Тип</th><th>Модель</th><th>Серийный номер</th><th>Гарантия до</th><th>Статус гарантии</th></tr></thead><tbody>
+{% for e in equipment %}<tr><td>{{ e.equipment_name }}</td><td>{{ e.equipment_type or '—' }}</td><td>{{ e.manufacturer or '' }} {{ e.model or '' }}</td><td>{{ e.serial_number or '—' }}</td><td>{{ e.warranty_until or '—' }}</td><td>{% if e.warranty_active %}<span class="pill good">Действует</span>{% else %}<span class="pill">Истекла</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="6" class="empty">Оборудование пока не добавлено.</td></tr>{% endfor %}</tbody></table></div>
+<h2>Мои заявки</h2>
+{% endif %}
+<div class="table-wrap"><table><thead><tr><th>№</th><th>Дата</th>{% if mode != 'client' %}<th>Клиент</th>{% endif %}<th>Оборудование</th><th>Приоритет</th><th>Статус</th><th></th></tr></thead><tbody>
+{% for r in requests %}<tr><td>{{ r.request_id }}</td><td>{{ r.request_date }}</td>{% if mode != 'client' %}<td>{{ r.company_name }}</td>{% endif %}<td>{{ r.equipment_name }}</td><td>{{ r.priority }}</td><td><span class="pill">{{ r.request_status }}</span></td><td><a href="{{ url_for('request_detail', request_id=r.request_id) }}">Открыть</a></td></tr>
+{% else %}<tr><td colspan="7" class="empty">Заявок пока нет.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}
