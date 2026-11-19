@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}Клиенты — СК Держава{% endblock %}
+{% block content %}<div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> СПРАВОЧНИК</div><h1>Клиенты</h1><p class="muted">Организации, передавшие оборудование на обслуживание.</p></div></div>
+<div class="table-card table-scroll"><table><thead><tr><th>Организация</th><th>Контактное лицо</th><th>Email</th><th>Телефон</th><th>Оборудование</th></tr></thead><tbody>{% for c in rows %}<tr><td>{{ c.name }}</td><td>{{ c.contact_person or '—' }}</td><td>{{ c.email }}</td><td>{{ c.phone or '—' }}</td><td>{{ c.equipment_count }}</td></tr>{% else %}<tr><td colspan="5" class="empty-cell">Клиенты не найдены.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
