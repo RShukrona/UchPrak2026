@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Оборудование — СК Держава{% endblock %}
 {% block content %}<div class="narrow-page"><a class="back-link" href="{{ url_for('equipment_list') }}">← К оборудованию</a><h1>{{ 'Редактирование' if item else 'Добавление оборудования' }}</h1>
-<form method="post" class="form-card form-stack">
+<form method="post" class="form-card form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <label>Клиент<select name="client_id" required>{% for c in clients %}<option value="{{ c.id }}" {% if item and item.client_id == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></label>
 <label>Модель оборудования<input name="model_name" value="{{ item.model_name if item else '' }}" required></label>
 <label>Тип оборудования<input name="equipment_type" value="{{ item.equipment_type if item else '' }}" required></label>
