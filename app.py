@@ -7,6 +7,7 @@ from functools import wraps
 import psycopg2
 from dotenv import load_dotenv
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from database import db
@@ -21,6 +22,7 @@ app.config.update(
     SESSION_COOKIE_SAMESITE="Lax",
     SESSION_COOKIE_SECURE=os.getenv("COOKIE_SECURE", "0") == "1",
 )
+csrf = CSRFProtect(app)
 
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@sk-dergava.ru").strip().lower()
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
