@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Сотрудник — СК Держава{% endblock %}
+{% block content %}<div class="narrow-page"><a class="back-link" href="{{ url_for('employees_list') }}">← К сотрудникам</a><h1>{{ 'Редактирование сотрудника' if item else 'Добавление сотрудника' }}</h1>
+<form method="post" class="form-card form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>ФИО<input name="full_name" value="{{ item.full_name if item else '' }}" required></label>
+<label>Должность<input name="position" value="{{ item.position if item else 'Инженер' }}" required></label>
+<label>Email<input type="email" name="email" value="{{ item.email if item else '' }}" required></label>
+<label>Телефон<input name="phone" value="{{ item.phone if item else '' }}"></label>
+<label>Специализация<input name="specialization" value="{{ item.specialization if item else '' }}"></label>
+{% if not item %}<label>Пароль<input type="password" name="password" minlength="8" required></label>{% endif %}
+<div class="form-actions"><a class="button button-secondary" href="{{ url_for('employees_list') }}">Отмена</a><button class="button button-primary">Сохранить</button></div></form></div>{% endblock %}
