@@ -87,10 +87,15 @@ def login():
                WHERE u.username = %s""", (username,)
         )
         if user and user["is_active"] and check_password_hash(user["password_hash"], password):
+            role_map = {1: "admin", 2: "engineer", 3: "client"}
+            role = role_map.get(user["role_id"])
+            if not role:
+                flash("Для учётной записи не настроена роль.", "error")
+                return render_template("login.html")
             session.clear()
             session.update(
                 user_id=user["user_id"], username=user["username"],
-                role=user["role_name"], role_id=user["role_id"],
+                role=role, role_id=user["role_id"],
                 client_id=user["client_id"], employee_id=user["employee_id"],
             )
             return redirect(url_for("dashboard"))
