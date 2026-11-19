@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Редактирование профиля — СК Держава{% endblock %}
+{% block content %}<div class="narrow-page"><a class="back-link" href="{{ url_for('profile') }}">← Назад в профиль</a><h1>Редактирование профиля</h1>
+<form method="post" class="form-card form-stack">
+{% if role == 'client' %}<label>Название организации<input name="name" value="{{ profile.name }}" required></label><label>Контактное лицо<input name="contact_person" value="{{ profile.contact_person or '' }}"></label><label>Телефон<input name="phone" value="{{ profile.phone or '' }}"></label><label>Email<input type="email" name="email" value="{{ profile.email }}" required></label><label>Адрес<input name="address" value="{{ profile.address or '' }}"></label>
+{% else %}<label>ФИО<input name="full_name" value="{{ profile.full_name }}" required></label><label>Должность<input name="position" value="{{ profile.position }}"></label><label>Телефон<input name="phone" value="{{ profile.phone or '' }}"></label><label>Email<input type="email" name="email" value="{{ profile.email }}" required></label><label>Специализация<input name="specialization" value="{{ profile.specialization or '' }}"></label>{% endif %}
+<div class="form-actions"><a class="button button-secondary" href="{{ url_for('profile') }}">Отмена</a><button class="button button-primary">Сохранить</button></div></form></div>{% endblock %}
