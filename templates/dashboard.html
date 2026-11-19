@@ -1,25 +1,49 @@
 {% extends "base.html" %}
 {% block title %}Рабочая панель — СК Держава{% endblock %}
 {% block content %}
-<h1>Рабочая панель</h1>
+<section class="page-heading">
+  <div><div class="eyebrow"><span class="eyebrow-line"></span> РАБОЧЕЕ ПРОСТРАНСТВО</div>
+    <h1>{% if mode == 'admin' %}Панель управления{% elif mode == 'engineer' %}Мои задачи{% else %}Мой кабинет{% endif %}</h1>
+    <p class="muted">{% if mode == 'admin' %}Общая картина по заявкам, клиентам и оборудованию{% elif mode == 'engineer' %}Заявки, назначенные на вас{% else %}Ваше оборудование и обращения в сервис{% endif %}</p>
+  </div>
+  {% if mode == 'client' %}<a class="button button-primary" href="{{ url_for('new_request') }}">＋ Создать заявку</a>{% endif %}
+</section>
+
 {% if mode == 'admin' %}
-<div class="stats-grid">
-  <div class="stat"><span>Клиенты</span><strong>{{ stats.clients_count }}</strong></div>
-  <div class="stat"><span>Оборудование</span><strong>{{ stats.equipment_count }}</strong></div>
-  <div class="stat"><span>Всего заявок</span><strong>{{ stats.requests_count }}</strong></div>
-  <div class="stat"><span>Активные заявки</span><strong>{{ stats.active_count }}</strong></div>
-</div>
-<h2>Последние заявки</h2>
+<section class="stats-grid">
+  <article class="stat-card"><span class="stat-icon violet">▦</span><span class="stat-label">Клиенты</span><strong>{{ stats.clients_count }}</strong><small>Организаций в системе</small></article>
+  <article class="stat-card"><span class="stat-icon blue">⚙</span><span class="stat-label">Оборудование</span><strong>{{ stats.equipment_count }}</strong><small>Единиц на учёте</small></article>
+  <article class="stat-card"><span class="stat-icon amber">▤</span><span class="stat-label">Всего заявок</span><strong>{{ stats.requests_count }}</strong><small>За всё время</small></article>
+  <article class="stat-card"><span class="stat-icon green">◷</span><span class="stat-label">Активные заявки</span><strong>{{ stats.active_count }}</strong><small>Требуют внимания</small></article>
+</section>
 {% elif mode == 'engineer' %}
-<p class="muted">Заявки, назначенные на вашу учётную запись.</p><h2>Мои заявки</h2>
+<div class="info-banner"><span class="banner-icon">✦</span><span><strong>Рабочий список инженера</strong><small>Здесь отображаются заявки, назначенные на вашу учётную запись.</small></span></div>
 {% else %}
-<div class="section-heading"><h2>Моё оборудование</h2><a class="button" href="{{ url_for('new_request') }}">Создать заявку</a></div>
-<div class="table-wrap"><table><thead><tr><th>Оборудование</th><th>Тип</th><th>Модель</th><th>Серийный номер</th><th>Гарантия до</th><th>Статус гарантии</th></tr></thead><tbody>
-{% for e in equipment %}<tr><td>{{ e.equipment_name }}</td><td>{{ e.equipment_type or '—' }}</td><td>{{ e.manufacturer or '' }} {{ e.model or '' }}</td><td>{{ e.serial_number or '—' }}</td><td>{{ e.warranty_until or '—' }}</td><td>{% if e.warranty_active %}<span class="pill good">Действует</span>{% else %}<span class="pill">Истекла</span>{% endif %}</td></tr>
-{% else %}<tr><td colspan="6" class="empty">Оборудование пока не добавлено.</td></tr>{% endfor %}</tbody></table></div>
-<h2>Мои заявки</h2>
+<section class="section-block">
+  <div class="section-title"><div><h2>Моё оборудование</h2><p>Состояние и гарантийная информация</p></div><span class="count-chip">{{ equipment|length }} ед.</span></div>
+  <div class="equipment-grid">
+    {% for e in equipment %}
+    <article class="equipment-card">
+      <div class="equipment-top"><span class="equipment-icon">⚙</span><span class="status-tag {% if e.warranty_active %}tag-good{% else %}tag-muted{% endif %}">{% if e.warranty_active %}Гарантия действует{% else %}Гарантия истекла{% endif %}</span></div>
+      <h3>{{ e.equipment_name }}</h3>
+      <p>{{ e.manufacturer or '' }} {{ e.model or '' }}</p>
+      <div class="equipment-meta"><span>Серийный номер</span><strong>{{ e.serial_number or 'Не указан' }}</strong></div>
+      <div class="equipment-meta"><span>Гарантия до</span><strong>{{ e.warranty_until or '—' }}</strong></div>
+    </article>
+    {% else %}<div class="empty-card">Оборудование пока не зарегистрировано.</div>{% endfor %}
+  </div>
+</section>
 {% endif %}
-<div class="table-wrap"><table><thead><tr><th>№</th><th>Дата</th>{% if mode != 'client' %}<th>Клиент</th>{% endif %}<th>Оборудование</th><th>Приоритет</th><th>Статус</th><th></th></tr></thead><tbody>
-{% for r in requests %}<tr><td>{{ r.request_id }}</td><td>{{ r.request_date }}</td>{% if mode != 'client' %}<td>{{ r.company_name }}</td>{% endif %}<td>{{ r.equipment_name }}</td><td>{{ r.priority }}</td><td><span class="pill">{{ r.request_status }}</span></td><td><a href="{{ url_for('request_detail', request_id=r.request_id) }}">Открыть</a></td></tr>
-{% else %}<tr><td colspan="7" class="empty">Заявок пока нет.</td></tr>{% endfor %}</tbody></table></div>
+
+<section class="section-block">
+  <div class="section-title"><div><h2>{% if mode == 'client' %}Мои заявки{% elif mode == 'engineer' %}Назначенные заявки{% else %}Последние заявки{% endif %}</h2><p>{% if mode == 'admin' %}Последние обращения клиентов{% else %}Список обращений и текущие этапы работ{% endif %}</p></div><span class="count-chip">{{ requests|length }} заявок</span></div>
+  <div class="table-card"><div class="table-scroll"><table>
+    <thead><tr><th>Заявка</th><th>Дата</th>{% if mode != 'client' %}<th>Клиент</th>{% endif %}<th>Оборудование</th>{% if mode == 'admin' %}<th>Инженер</th>{% endif %}<th>Приоритет</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+    {% for r in requests %}
+    <tr><td><strong class="request-number">№{{ r.request_id }}</strong></td><td>{{ r.request_date }}</td>{% if mode != 'client' %}<td>{{ r.company_name }}</td>{% endif %}<td>{{ r.equipment_name }}</td>{% if mode == 'admin' %}<td>{{ r.engineer_name or 'Не назначен' }}</td>{% endif %}<td><span class="priority priority-{{ r.priority }}">{{ priority_labels.get(r.priority, r.priority) }}</span></td><td><span class="status-tag status-{{ r.request_status }}">{{ status_labels.get(r.request_status, r.request_status) }}</span></td><td><a class="table-link" href="{{ url_for('request_detail', request_id=r.request_id) }}">Открыть →</a></td></tr>
+    {% else %}<tr><td colspan="8" class="empty-cell">Заявок пока нет. Когда появятся обращения, они будут отображаться здесь.</td></tr>{% endfor %}
+    </tbody>
+  </table></div></div>
+</section>
 {% endblock %}
