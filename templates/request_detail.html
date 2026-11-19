@@ -1,11 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Заявка №{{ item.request_id }} — СК Держава{% endblock %}
 {% block content %}
-<a href="{{ url_for('dashboard') }}">← К списку заявок</a><h1>Заявка №{{ item.request_id }}</h1>
-<div class="detail-grid"><section class="panel"><h2>Информация</h2><dl>
-<dt>Клиент</dt><dd>{{ item.company_name }}</dd><dt>Оборудование</dt><dd>{{ item.equipment_name }}</dd><dt>Серийный номер</dt><dd>{{ item.serial_number or '—' }}</dd><dt>Дата заявки</dt><dd>{{ item.request_date }}</dd><dt>Приоритет</dt><dd>{{ item.priority }}</dd><dt>Статус</dt><dd><span class="pill">{{ item.request_status }}</span></dd><dt>Ответственный инженер</dt><dd>{{ item.engineer_name or 'Не назначен' }}</dd><dt>Описание</dt><dd class="description">{{ item.problem_description }}</dd></dl></section>
-{% if session.get('role') == 'admin' %}<section class="panel"><h2>Назначить инженера</h2><form method="post" action="{{ url_for('assign_engineer', request_id=item.request_id) }}" class="form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Ответственный инженер<select name="employee_id"><option value="">Не назначен</option>{% for emp in employees %}<option value="{{ emp.employee_id }}" {% if item.assigned_employee_id == emp.employee_id %}selected{% endif %}>{{ emp.full_name }}</option>{% endfor %}</select></label><button class="button" type="submit">Сохранить назначение</button></form></section>{% endif %}
-{% if can_manage %}<section class="panel"><h2>Изменить статус</h2><form method="post" action="{{ url_for('update_status', request_id=item.request_id) }}" class="form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Новый статус<select name="request_status" required><option value="accepted">Принята</option><option value="diagnostics">Диагностика</option><option value="in_repair">В ремонте</option><option value="completed">Завершена</option><option value="rejected">Отклонена</option></select></label><button class="button" type="submit">Сохранить статус</button></form>
-{% if repair %}<h3>Данные ремонта</h3><p>Начало: {{ repair.repair_start or '—' }}</p><p>Окончание: {{ repair.repair_end or '—' }}</p><p>Результат диагностики: {{ repair.diagnostic_result or '—' }}</p><p>Описание ремонта: {{ repair.repair_description or '—' }}</p><p>Стоимость: {{ repair.cost if repair.cost is not none else '—' }}</p>{% endif %}</section>{% endif %}</div>
-<section class="panel"><h2>История статусов</h2><div class="table-wrap"><table><thead><tr><th>Дата</th><th>Предыдущий статус</th><th>Новый статус</th><th>Кем изменён</th></tr></thead><tbody>{% for h in history %}<tr><td>{{ h.changed_at }}</td><td>{{ h.old_status or '—' }}</td><td>{{ h.new_status }}</td><td>{{ h.username or '—' }}</td></tr>{% else %}<tr><td colspan="4" class="empty">История пуста.</td></tr>{% endfor %}</tbody></table></div></section>
+<a class="back-link" href="{{ url_for('dashboard') }}">← К списку заявок</a>
+<section class="page-heading compact"><div><div class="eyebrow"><span class="eyebrow-line"></span> КАРТОЧКА ОБРАЩЕНИЯ</div><h1>Заявка №{{ item.request_id }}</h1><p class="muted">{{ item.equipment_name }} · {{ item.request_date }}</p></div><span class="status-tag status-{{ item.request_status }} large-tag">{{ status_labels.get(item.request_status, item.request_status) }}</span></section>
+<div class="detail-layout">
+  <section class="panel-card">
+    <div class="panel-heading"><div><h2>Информация о заявке</h2><p>Основные сведения об обращении</p></div><span class="panel-heading-icon">▤</span></div>
+    <dl class="detail-list">
+      <dt>Клиент</dt><dd>{{ item.company_name }}</dd>
+      <dt>Оборудование</dt><dd>{{ item.equipment_name }}</dd>
+      <dt>Серийный номер</dt><dd>{{ item.serial_number or '—' }}</dd>
+      <dt>Дата обращения</dt><dd>{{ item.request_date }}</dd>
+      <dt>Приоритет</dt><dd><span class="priority priority-{{ item.priority }}">{{ priority_labels.get(item.priority, item.priority) }}</span></dd>
+      <dt>Ответственный</dt><dd>{{ item.engineer_name or 'Пока не назначен' }}</dd>
+      <dt>Описание проблемы</dt><dd class="description-box">{{ item.problem_description }}</dd>
+    </dl>
+  </section>
+  {% if session.get('role') == 'admin' %}
+  <section class="panel-card">
+    <div class="panel-heading"><div><h2>Ответственный инженер</h2><p>Назначение исполнителя заявки</p></div><span class="panel-heading-icon">♙</span></div>
+    <form method="post" action="{{ url_for('assign_engineer', request_id=item.request_id) }}" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Инженер<select name="employee_id"><option value="">Не назначен</option>{% for emp in employees %}<option value="{{ emp.employee_id }}" {% if item.assigned_employee_id == emp.employee_id %}selected{% endif %}>{{ emp.full_name }}</option>{% endfor %}</select></label>
+      <button class="button button-primary" type="submit">Сохранить назначение</button>
+    </form>
+  </section>
+  {% endif %}
+  {% if can_manage %}
+  <section class="panel-card">
+    <div class="panel-heading"><div><h2>Этап ремонта</h2><p>Обновление текущего состояния заявки</p></div><span class="panel-heading-icon">⚙</span></div>
+    <form method="post" action="{{ url_for('update_status', request_id=item.request_id) }}" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Новый статус<select name="request_status" required><option value="accepted">Принята</option><option value="diagnostics">Диагностика</option><option value="in_repair">В ремонте</option><option value="completed">Завершена</option><option value="rejected">Отклонена</option></select></label>
+      <button class="button button-primary" type="submit">Обновить статус</button>
+    </form>
+    {% if repair %}
+    <div class="repair-summary"><h3>Сведения о ремонте</h3><div><span>Начало</span><strong>{{ repair.repair_start or '—' }}</strong></div><div><span>Окончание</span><strong>{{ repair.repair_end or '—' }}</strong></div><div><span>Диагностика</span><strong>{{ repair.diagnostic_result or 'Не заполнена' }}</strong></div><div><span>Описание работ</span><strong>{{ repair.repair_description or 'Не заполнено' }}</strong></div><div><span>Стоимость</span><strong>{{ repair.cost if repair.cost is not none else '—' }}</strong></div></div>
+    {% endif %}
+  </section>
+  {% endif %}
+</div>
+<section class="panel-card history-card">
+  <div class="panel-heading"><div><h2>История изменений</h2><p>Хронология движения заявки</p></div><span class="panel-heading-icon">◷</span></div>
+  <div class="table-scroll"><table><thead><tr><th>Дата и время</th><th>Предыдущий статус</th><th>Новый статус</th><th>Пользователь</th></tr></thead><tbody>
+  {% for h in history %}<tr><td>{{ h.changed_at }}</td><td>{{ status_labels.get(h.old_status, h.old_status or '—') }}</td><td><span class="status-tag status-{{ h.new_status }}">{{ status_labels.get(h.new_status, h.new_status) }}</span></td><td>{{ h.username or '—' }}</td></tr>
+  {% else %}<tr><td colspan="4" class="empty-cell">История изменений пока пуста.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
 {% endblock %}
