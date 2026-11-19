@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Оборудование — СК Держава{% endblock %}
+{% block content %}<div class="narrow-page"><a class="back-link" href="{{ url_for('equipment_list') }}">← К оборудованию</a><h1>{{ 'Редактирование' if item else 'Добавление оборудования' }}</h1>
+<form method="post" class="form-card form-stack">
+<label>Клиент<select name="client_id" required>{% for c in clients %}<option value="{{ c.id }}" {% if item and item.client_id == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></label>
+<label>Модель оборудования<input name="model_name" value="{{ item.model_name if item else '' }}" required></label>
+<label>Тип оборудования<input name="equipment_type" value="{{ item.equipment_type if item else '' }}" required></label>
+<label>Серийный номер<input name="serial_number" value="{{ item.serial_number if item else '' }}" required></label>
+<label>Год производства<input type="number" name="production_year" min="1900" max="2100" value="{{ item.production_year if item else '' }}"></label>
+<label>Номер гарантии<input name="warranty_number" value="{{ item.warranty_number if item else '' }}"></label>
+<label>Гарантия до<input type="date" name="warranty_until" value="{{ item.warranty_until if item and item.warranty_until else '' }}"></label>
+<label>Примечание<textarea name="note">{{ item.note if item else '' }}</textarea></label>
+<div class="form-actions"><a class="button button-secondary" href="{{ url_for('equipment_list') }}">Отмена</a><button class="button button-primary">Сохранить</button></div>
+</form></div>{% endblock %}
