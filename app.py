@@ -506,6 +506,112 @@ def clients_list():
     return render_template("clients.html", rows=rows)
 
 
+
+@app.route("/clients/add", methods=["GET", "POST"])
+@roles_required("admin")
+def client_add():
+    if request.method == "POST":
+        try:
+            db.execute(
+                """INSERT INTO clients(name,contact_person,email,phone,password,address,registration_date)
+                   VALUES(%s,%s,%s,%s,%s,%s,CURRENT_DATE)""",
+                (request.form.get("name"), request.form.get("contact_person"),
+                 request.form.get("email", "").strip().lower(), request.form.get("phone"),
+                 generate_password_hash(request.form.get("password", "")), request.form.get("address"))
+            )
+            flash("Клиент добавлен.", "success")
+            return redirect(url_for("clients_list"))
+        except psycopg2.IntegrityError:
+            flash("Не удалось добавить клиента: проверьте уникальность email и заполнение полей.", "error")
+    return render_template("client_form.html", item=None)
+
+
+@app.route("/clients/<int:item_id>/edit", methods=["GET", "POST"])
+@roles_required("admin")
+def client_edit(item_id):
+    item = db.fetch_one("SELECT id,name,contact_person,email,phone,address FROM clients WHERE id=%s", (item_id,))
+    if not item:
+        abort(404)
+    if request.method == "POST":
+        try:
+            db.execute(
+                """UPDATE clients SET name=%s,contact_person=%s,email=%s,phone=%s,address=%s
+                   WHERE id=%s""",
+                (request.form.get("name"), request.form.get("contact_person"),
+                 request.form.get("email", "").strip().lower(), request.form.get("phone"),
+                 request.form.get("address"), item_id)
+            )
+            flash("Данные клиента обновлены.", "success")
+            return redirect(url_for("clients_list"))
+        except psycopg2.IntegrityError:
+            flash("Такой email уже используется.", "error")
+    return render_template("client_form.html", item=item)
+
+
+@app.post("/clients/<int:item_id>/delete")
+@roles_required("admin")
+def client_delete(item_id):
+    try:
+        db.execute("DELETE FROM clients WHERE id=%s", (item_id,))
+        flash("Клиент удалён.", "success")
+    except psycopg2.IntegrityError:
+        flash("Нельзя удалить клиента: сначала удалите или переназначьте его оборудование и заявки.", "error")
+    return redirect(url_for("clients_list"))
+
+
+@app.route("/employees/add", methods=["GET", "POST"])
+@roles_required("admin")
+def employee_add():
+    if request.method == "POST":
+        try:
+            db.execute(
+                """INSERT INTO employees(full_name,position,phone,email,password,specialization)
+                   VALUES(%s,%s,%s,%s,%s,%s)""",
+                (request.form.get("full_name"), request.form.get("position"),
+                 request.form.get("phone"), request.form.get("email", "").strip().lower(),
+                 generate_password_hash(request.form.get("password", "")), request.form.get("specialization"))
+            )
+            flash("Сотрудник добавлен.", "success")
+            return redirect(url_for("employees_list"))
+        except psycopg2.IntegrityError:
+            flash("Не удалось добавить сотрудника: проверьте уникальность email и поля.", "error")
+    return render_template("employee_form.html", item=None)
+
+
+@app.route("/employees/<int:item_id>/edit", methods=["GET", "POST"])
+@roles_required("admin")
+def employee_edit(item_id):
+    item = db.fetch_one(
+        "SELECT id,full_name,position,phone,email,specialization FROM employees WHERE id=%s", (item_id,)
+    )
+    if not item:
+        abort(404)
+    if request.method == "POST":
+        try:
+            db.execute(
+                """UPDATE employees SET full_name=%s,position=%s,phone=%s,email=%s,specialization=%s
+                   WHERE id=%s""",
+                (request.form.get("full_name"), request.form.get("position"), request.form.get("phone"),
+                 request.form.get("email", "").strip().lower(), request.form.get("specialization"), item_id)
+            )
+            flash("Данные сотрудника обновлены.", "success")
+            return redirect(url_for("employees_list"))
+        except psycopg2.IntegrityError:
+            flash("Такой email уже используется.", "error")
+    return render_template("employee_form.html", item=item)
+
+
+@app.post("/employees/<int:item_id>/delete")
+@roles_required("admin")
+def employee_delete(item_id):
+    try:
+        db.execute("DELETE FROM employees WHERE id=%s", (item_id,))
+        flash("Сотрудник удалён.", "success")
+    except psycopg2.IntegrityError:
+        flash("Нельзя удалить сотрудника: сначала переназначьте его активные заявки.", "error")
+    return redirect(url_for("employees_list"))
+
+
 @app.get("/employees")
 @roles_required("admin")
 def employees_list():
@@ -522,6 +628,49 @@ def employees_list():
 def statuses_list():
     rows = db.fetch_all("SELECT id,name,description FROM statuses ORDER BY id")
     return render_template("statuses.html", rows=rows)
+
+
+
+@app.route("/statuses/add", methods=["GET", "POST"])
+@roles_required("admin")
+def status_add():
+    if request.method == "POST":
+        try:
+            db.execute("INSERT INTO statuses(name,description) VALUES(%s,%s)",
+                       (request.form.get("name"), request.form.get("description")))
+            flash("Статус добавлен.", "success")
+            return redirect(url_for("statuses_list"))
+        except psycopg2.IntegrityError:
+            flash("Статус с таким названием уже существует.", "error")
+    return render_template("status_form.html", item=None)
+
+
+@app.route("/statuses/<int:item_id>/edit", methods=["GET", "POST"])
+@roles_required("admin")
+def status_edit(item_id):
+    item = db.fetch_one("SELECT id,name,description FROM statuses WHERE id=%s", (item_id,))
+    if not item:
+        abort(404)
+    if request.method == "POST":
+        try:
+            db.execute("UPDATE statuses SET name=%s,description=%s WHERE id=%s",
+                       (request.form.get("name"), request.form.get("description"), item_id))
+            flash("Статус обновлён.", "success")
+            return redirect(url_for("statuses_list"))
+        except psycopg2.IntegrityError:
+            flash("Статус с таким названием уже существует.", "error")
+    return render_template("status_form.html", item=item)
+
+
+@app.post("/statuses/<int:item_id>/delete")
+@roles_required("admin")
+def status_delete(item_id):
+    try:
+        db.execute("DELETE FROM statuses WHERE id=%s", (item_id,))
+        flash("Статус удалён.", "success")
+    except psycopg2.IntegrityError:
+        flash("Нельзя удалить статус, который используется в заявках.", "error")
+    return redirect(url_for("statuses_list"))
 
 
 @app.get("/reports")
