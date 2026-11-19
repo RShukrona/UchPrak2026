@@ -3,26 +3,25 @@
 {% block content %}
 <section class="auth-layout">
   <div class="auth-intro">
-    <div class="eyebrow"><span class="eyebrow-line"></span> ЕДИНАЯ СЕРВИСНАЯ ПЛАТФОРМА</div>
-    <h1>Контроль ремонта.<br><span>В одном месте.</span></h1>
-    <p>Управляйте заявками, отслеживайте состояние оборудования и контролируйте каждый этап обслуживания.</p>
+    <div class="eyebrow"><span class="eyebrow-line"></span> СЕРВИСНАЯ СИСТЕМА</div>
+    <h1>Ремонт под<br><span>контролем.</span></h1>
+    <p>Единое пространство для учёта промышленного оборудования, регистрации заявок и контроля этапов ремонта.</p>
     <div class="feature-list">
       <div><span class="feature-icon">01</span><span><strong>Заявки и ремонты</strong><small>От обращения до завершения работ</small></span></div>
-      <div><span class="feature-icon">02</span><span><strong>Контроль гарантии</strong><small>Сроки обслуживания всегда под рукой</small></span></div>
-      <div><span class="feature-icon">03</span><span><strong>Разграничение доступа</strong><small>Отдельные кабинеты для каждой роли</small></span></div>
+      <div><span class="feature-icon">02</span><span><strong>Оборудование и гарантия</strong><small>История и данные техники клиентов</small></span></div>
+      <div><span class="feature-icon">03</span><span><strong>Три уровня доступа</strong><small>Администратор, инженер и клиент</small></span></div>
     </div>
   </div>
   <div class="auth-card">
     <div class="auth-card-top"><span class="auth-icon">↗</span><span class="auth-caption">ЛИЧНЫЙ КАБИНЕТ</span></div>
-    <h2>С возвращением</h2>
-    <p class="muted">Введите данные своей учётной записи</p>
+    <h2>Вход в систему</h2><p class="muted">Введите email и пароль</p>
     <form method="post" class="form-stack">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <label>Логин<input name="username" autocomplete="username" placeholder="Например, admin" required autofocus></label>
+      <label>Email<input type="email" name="email" autocomplete="username" placeholder="name@example.ru" required autofocus></label>
       <label>Пароль<input type="password" name="password" autocomplete="current-password" placeholder="Введите пароль" required></label>
-      <button class="button button-primary button-wide" type="submit">Войти в систему <span aria-hidden="true">→</span></button>
+      <button class="button button-primary button-wide" type="submit">Войти в систему →</button>
     </form>
-    <div class="auth-note"><span>●</span> Защищённый доступ для сотрудников и клиентов</div>
+    <p class="auth-register">Ещё нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться</a></p>
+    <div class="auth-note"><span>●</span> Доступ для клиентов и сотрудников компании</div>
   </div>
 </section>
 {% endblock %}
