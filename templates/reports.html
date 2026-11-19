@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Отчёты — СК Держава{% endblock %}
+{% block content %}<div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> АНАЛИТИКА</div><h1>Отчёты</h1><p class="muted">Сводная информация по заявкам и стоимости ремонта.</p></div></div>
+<section class="stats-grid"><article class="stat-card"><span class="stat-icon blue">▤</span><span class="stat-label">Всего заявок</span><strong>{{ totals.total }}</strong></article><article class="stat-card"><span class="stat-icon green">₽</span><span class="stat-label">Сумма ремонтов</span><strong>{{ totals.revenue }}</strong><small>рублей</small></article></section>
+<div class="table-card table-scroll"><table><thead><tr><th>Статус</th><th>Количество заявок</th></tr></thead><tbody>{% for r in rows %}<tr><td>{{ r.status_name }}</td><td>{{ r.requests_count }}</td></tr>{% else %}<tr><td colspan="2" class="empty-cell">Данных пока нет.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
