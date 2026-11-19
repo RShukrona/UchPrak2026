@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Заявки — СК Держава{% endblock %}
+{% block content %}<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> СЕРВИСНЫЕ ОБРАЩЕНИЯ</div><h1>Заявки на ремонт</h1><p class="muted">Контроль регистрации и выполнения ремонтных работ.</p></div>{% if session.get('role') == 'client' %}<a class="button button-primary" href="{{ url_for('request_new') }}">＋ Новая заявка</a>{% endif %}</section>
+<div class="table-card table-scroll"><table><thead><tr><th>Номер</th><th>Дата</th><th>Клиент</th><th>Оборудование</th><th>Статус</th><th>Инженер</th><th>Стоимость</th><th></th></tr></thead><tbody>
+{% for r in rows %}<tr><td><strong class="request-number">{{ r.request_number }}</strong></td><td>{{ r.creation_date }}</td><td>{{ r.client_name }}</td><td>{{ r.model_name }}</td><td><span class="status-tag">{{ r.status_name }}</span></td><td>{{ r.employee_name or '—' }}</td><td>{{ r.final_cost }} ₽</td><td><a class="table-link" href="{{ url_for('request_detail', item_id=r.id) }}">Открыть →</a></td></tr>
+{% else %}<tr><td colspan="8" class="empty-cell">Заявок пока нет.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
