@@ -1,20 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Новая заявка — СК Держава{% endblock %}
 {% block content %}
-<div class="narrow-page">
-  <a class="back-link" href="{{ url_for('dashboard') }}">← Вернуться в кабинет</a>
-  <div class="page-heading compact"><div><div class="eyebrow"><span class="eyebrow-line"></span> ОБРАЩЕНИЕ В СЕРВИС</div><h1>Новая заявка</h1><p class="muted">Опишите проблему — специалисты рассмотрят обращение.</p></div></div>
-  {% if not equipment %}<div class="alert error">Для вашей организации пока нет зарегистрированного оборудования. Обратитесь к администратору.</div>
-  {% else %}
-  <form method="post" class="form-card form-stack">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="form-section-heading"><span class="form-step">01</span><div><strong>Оборудование</strong><small>Выберите единицу, для которой требуется обслуживание</small></div></div>
-    <label>Оборудование<select name="equipment_id" required><option value="">Выберите оборудование</option>{% for e in equipment %}<option value="{{ e.equipment_id }}">{{ e.equipment_name }}{% if e.serial_number %} · {{ e.serial_number }}{% endif %}</option>{% endfor %}</select></label>
-    <div class="form-section-heading"><span class="form-step">02</span><div><strong>Описание обращения</strong><small>Укажите симптомы и обстоятельства возникновения проблемы</small></div></div>
-    <label>Приоритет<select name="priority"><option value="low">Низкий — плановое обращение</option><option value="medium" selected>Средний — стандартный</option><option value="high">Высокий — требуется внимание</option><option value="urgent">Срочный — простой оборудования</option></select></label>
-    <label>Описание неисправности<textarea name="problem_description" rows="6" minlength="10" required placeholder="Например: оборудование не запускается после включения, на панели отображается код ошибки..."></textarea><small class="field-hint">Минимум 10 символов. Чем подробнее описание, тем проще специалисту оценить проблему.</small></label>
-    <div class="form-actions"><a class="button button-secondary" href="{{ url_for('dashboard') }}">Отмена</a><button class="button button-primary" type="submit">Отправить заявку →</button></div>
-  </form>
-  {% endif %}
-</div>
+<div class="narrow-page"><a class="back-link" href="{{ url_for('requests_list') }}">← К списку заявок</a>
+<div class="page-heading compact"><div><div class="eyebrow"><span class="eyebrow-line"></span> ОБРАЩЕНИЕ В СЕРВИС</div><h1>Новая заявка</h1><p class="muted">Опишите неисправность оборудования.</p></div></div>
+{% if not equipment %}<div class="alert error">У вас пока нет зарегистрированного оборудования. Обратитесь к сотруднику компании.</div>
+{% else %}<form method="post" class="form-card form-stack">
+<label>Оборудование<select name="equipment_id" required><option value="">Выберите оборудование</option>{% for e in equipment %}<option value="{{ e.id }}">{{ e.model_name }} · {{ e.serial_number }}</option>{% endfor %}</select></label>
+<label>Описание неисправности<textarea name="problem_description" minlength="10" required placeholder="Подробно опишите проблему..."></textarea></label>
+<div class="form-actions"><a class="button button-secondary" href="{{ url_for('requests_list') }}">Отмена</a><button class="button button-primary" type="submit">Отправить заявку →</button></div>
+</form>{% endif %}</div>
 {% endblock %}
