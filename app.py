@@ -1,5 +1,6 @@
 import logging
 import os
+from contextlib import contextmanager
 from datetime import date
 from functools import wraps
 
@@ -49,14 +50,24 @@ def get_db():
     )
 
 
+@contextmanager
+def db_connection():
+    conn = get_db()
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
+
+
 def query_one(sql, params=()):
-    with get_db() as conn, conn.cursor() as cur:
+    with db_connection() as conn, conn.cursor() as cur:
         cur.execute(sql, params)
         return cur.fetchone()
 
 
 def query_all(sql, params=()):
-    with get_db() as conn, conn.cursor() as cur:
+    with db_connection() as conn, conn.cursor() as cur:
         cur.execute(sql, params)
         return cur.fetchall()
 
@@ -252,7 +263,7 @@ def new_request():
             flash("Выбран неизвестный приоритет.", "error")
         else:
             try:
-                with get_db() as conn, conn.cursor() as cur:
+                with db_connection() as conn, conn.cursor() as cur:
                     cur.execute(
                         """INSERT INTO repair_requests
                            (client_id, equipment_id, request_date, problem_description, priority, request_status)
@@ -340,7 +351,7 @@ def assign_engineer(request_id):
             flash("Выбранный сотрудник не найден или неактивен.", "error")
             return redirect(url_for("request_detail", request_id=request_id))
 
-    with get_db() as conn, conn.cursor() as cur:
+    with db_connection() as conn, conn.cursor() as cur:
         cur.execute(
             """UPDATE repair_requests
                SET assigned_employee_id = %s, updated_at = CURRENT_TIMESTAMP
@@ -362,7 +373,7 @@ def update_status(request_id):
     if new_status not in allowed:
         abort(400)
 
-    with get_db() as conn, conn.cursor() as cur:
+    with db_connection() as conn, conn.cursor() as cur:
         cur.execute(
             "SELECT * FROM repair_requests WHERE request_id = %s FOR UPDATE",
             (request_id,),
