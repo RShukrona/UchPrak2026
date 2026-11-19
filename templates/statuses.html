@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}Статусы — СК Держава{% endblock %}
+{% block content %}<div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> СПРАВОЧНИК</div><h1>Статусы заявок</h1><p class="muted">Этапы обработки обращения и ремонта.</p></div></div>
+<div class="table-card table-scroll"><table><thead><tr><th>ID</th><th>Статус</th><th>Описание</th></tr></thead><tbody>{% for s in rows %}<tr><td>{{ s.id }}</td><td><strong>{{ s.name }}</strong></td><td>{{ s.description or '—' }}</td></tr>{% else %}<tr><td colspan="3" class="empty-cell">Статусы не найдены.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
