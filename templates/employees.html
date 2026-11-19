@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block title %}Сотрудники — СК Держава{% endblock %}
+{% block content %}<div class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> КОМАНДА</div><h1>Сотрудники</h1><p class="muted">Инженеры и специалисты по ремонту оборудования.</p></div></div>
+<div class="table-card table-scroll"><table><thead><tr><th>ФИО</th><th>Должность</th><th>Email</th><th>Телефон</th><th>Специализация</th><th>Заявки</th></tr></thead><tbody>{% for e in rows %}<tr><td>{{ e.full_name }}</td><td>{{ e.position }}</td><td>{{ e.email }}</td><td>{{ e.phone or '—' }}</td><td>{{ e.specialization or '—' }}</td><td>{{ e.requests_count }}</td></tr>{% else %}<tr><td colspan="6" class="empty-cell">Сотрудники не найдены.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
