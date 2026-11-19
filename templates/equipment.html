@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Оборудование — СК Держава{% endblock %}
+{% block content %}<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> РЕЕСТР ТЕХНИКИ</div><h1>Оборудование</h1><p class="muted">Промышленные машины и оборудование на обслуживании.</p></div>{% if can_edit %}<a class="button button-primary" href="{{ url_for('equipment_add') }}">＋ Добавить</a>{% endif %}</section>
+<div class="table-card table-scroll"><table><thead><tr><th>Модель</th><th>Тип</th><th>Серийный номер</th><th>Клиент</th><th>Год</th><th>Гарантия до</th><th></th></tr></thead><tbody>
+{% for e in rows %}<tr><td><strong>{{ e.model_name }}</strong></td><td>{{ e.equipment_type }}</td><td>{{ e.serial_number }}</td><td>{{ e.client_name }}</td><td>{{ e.production_year or '—' }}</td><td>{{ e.warranty_until or '—' }}</td><td>{% if can_edit %}<a class="table-link" href="{{ url_for('equipment_edit', item_id=e.id) }}">Изменить</a>{% endif %}</td></tr>
+{% else %}<tr><td colspan="7" class="empty-cell">Оборудование не найдено.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}
