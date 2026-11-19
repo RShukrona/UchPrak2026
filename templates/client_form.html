@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Клиент — СК Держава{% endblock %}
+{% block content %}<div class="narrow-page"><a class="back-link" href="{{ url_for('clients_list') }}">← К клиентам</a><h1>{{ 'Редактирование клиента' if item else 'Добавление клиента' }}</h1>
+<form method="post" class="form-card form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Название организации<input name="name" value="{{ item.name if item else '' }}" required></label>
+<label>Контактное лицо<input name="contact_person" value="{{ item.contact_person if item else '' }}"></label>
+<label>Email<input type="email" name="email" value="{{ item.email if item else '' }}" required></label>
+<label>Телефон<input name="phone" value="{{ item.phone if item else '' }}"></label>
+<label>Адрес<input name="address" value="{{ item.address if item else '' }}"></label>
+{% if not item %}<label>Временный пароль<input type="password" name="password" minlength="8" required></label>{% endif %}
+<div class="form-actions"><a class="button button-secondary" href="{{ url_for('clients_list') }}">Отмена</a><button class="button button-primary">Сохранить</button></div></form></div>{% endblock %}
