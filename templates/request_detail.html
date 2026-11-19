@@ -9,7 +9,7 @@
 <dt>Клиент</dt><dd>{{ item.client_name }}</dd><dt>Оборудование</dt><dd>{{ item.model_name }} ({{ item.equipment_type }})</dd><dt>Серийный номер</dt><dd>{{ item.serial_number }}</dd><dt>Гарантия</dt><dd>{{ 'Да' if item.is_warranty else 'Нет' }}</dd><dt>Ответственный</dt><dd>{{ item.employee_name or 'Не назначен' }}</dd><dt>Описание</dt><dd class="description-box">{{ item.problem_description }}</dd><dt>Стоимость работ</dt><dd>{{ item.labor_cost }} ₽</dd><dt>Запчасти</dt><dd>{{ item.parts_cost }} ₽</dd><dt>Итого</dt><dd><strong>{{ item.final_cost }} ₽</strong></dd>
 </dl></section>
 {% if can_manage %}<section class="panel-card"><div class="panel-heading"><div><h2>Управление заявкой</h2><p>Назначение инженера и изменение статуса</p></div></div>
-<form method="post" action="{{ url_for('request_update', item_id=item.id) }}" class="form-stack">
+<form method="post" action="{{ url_for('request_update', item_id=item.id) }}" class="form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 {% if session.get('role') == 'admin' %}<label>Ответственный инженер<select name="employee_id"><option value="">Не назначен</option>{% for e in employees %}<option value="{{ e.id }}" {% if item.employee_id == e.id %}selected{% endif %}>{{ e.full_name }}</option>{% endfor %}</select></label>{% endif %}
 <label>Статус<select name="status_id" required>{% for s in statuses %}<option value="{{ s.id }}" {% if item.status_id == s.id %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></label>
 <label>Стоимость работ, ₽<input type="number" name="labor_cost" min="0" step="0.01" value="{{ item.labor_cost }}"></label>
@@ -17,7 +17,7 @@
 <button class="button button-primary" type="submit">Сохранить изменения →</button></form>
 {% if item.is_warranty %}<p class="field-hint">Гарантийная заявка: итоговая стоимость автоматически равна нулю.</p>{% endif %}
 </section>{% elif session.get('role') == 'client' and item.status_name == 'Новая' %}
-<form method="post" action="{{ url_for('request_cancel', item_id=item.id) }}"><button class="button button-secondary" type="submit">Отменить заявку</button></form>
+<form method="post" action="{{ url_for('request_cancel', item_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button button-secondary" type="submit">Отменить заявку</button></form>
 {% endif %}
 </div>
 {% endblock %}
