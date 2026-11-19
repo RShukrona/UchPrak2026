@@ -3,24 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}СК Держава — ремонт оборудования{% endblock %}</title>
+  <meta name="theme-color" content="#101d35">
+  <title>{% block title %}СК Держава — сервисная система{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="{{ url_for('dashboard') if session.get('user_id') else url_for('login') }}">СК Держава</a>
+  <a class="brand" href="{{ url_for('dashboard') if session.get('user_id') else url_for('login') }}">
+    <span class="brand-mark">Д</span>
+    <span><strong>СК Держава</strong><small>СЕРВИС И РЕМОНТ ОБОРУДОВАНИЯ</small></span>
+  </a>
   {% if session.get('user_id') %}
-  <div class="userbar"><span>{{ session.get('username') }} · {{ session.get('role') }}</span>
-    <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button button-light" type="submit">Выйти</button></form>
+  <div class="userbar">
+    <div class="user-meta"><span class="user-dot"></span><span><strong>{{ session.get('username') }}</strong><small>{{ role_labels.get(session.get('role'), '') }}</small></span></div>
+    <form method="post" action="{{ url_for('logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="button button-ghost" type="submit">Выйти <span aria-hidden="true">↗</span></button>
+    </form>
   </div>
   {% endif %}
 </header>
 <main class="container">
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}<div class="messages">{% for category, message in messages %}<div class="alert {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% if messages %}<div class="messages">{% for category, message in messages %}<div class="alert {{ category }}"><span class="alert-icon">{% if category == 'success' %}✓{% else %}!{% endif %}</span>{{ message }}</div>{% endfor %}</div>{% endif %}
   {% endwith %}
   {% block content %}{% endblock %}
 </main>
-<footer>Система учёта и ремонта промышленного оборудования</footer>
+<footer class="footer"><span>© ООО «СК Держава»</span><span>Система учёта и ремонта промышленного оборудования</span></footer>
 </body>
 </html>
