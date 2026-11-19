@@ -15,7 +15,7 @@
   <div class="auth-card">
     <div class="auth-card-top"><span class="auth-icon">↗</span><span class="auth-caption">ЛИЧНЫЙ КАБИНЕТ</span></div>
     <h2>Вход в систему</h2><p class="muted">Введите email и пароль</p>
-    <form method="post" class="form-stack">
+    <form method="post" class="form-stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>Email<input type="email" name="email" autocomplete="username" placeholder="name@example.ru" required autofocus></label>
       <label>Пароль<input type="password" name="password" autocomplete="current-password" placeholder="Введите пароль" required></label>
       <button class="button button-primary button-wide" type="submit">Войти в систему →</button>
