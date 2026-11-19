@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — СК Держава{% endblock %}
+{% block content %}
+<div class="narrow-page">
+  <a class="back-link" href="{{ url_for('login') }}">← Ко входу</a>
+  <div class="page-heading compact"><div><div class="eyebrow"><span class="eyebrow-line"></span> НОВАЯ УЧЁТНАЯ ЗАПИСЬ</div><h1>Регистрация</h1><p class="muted">Создайте кабинет клиента или сотрудника.</p></div></div>
+  <form method="post" class="form-card form-stack">
+    <label>Тип учётной записи<select name="role" id="role" onchange="document.getElementById('employee-fields').hidden=this.value!=='employee'"><option value="client">Клиент</option><option value="employee">Сотрудник / инженер</option></select></label>
+    <label>Название организации / ФИО<input name="name" required></label>
+    <label>Контактное лицо (для клиента)<input name="contact_person"></label>
+    <label>Email<input type="email" name="email" required></label>
+    <label>Телефон<input name="phone"></label>
+    <label>Адрес (для клиента)<input name="address"></label>
+    <div id="employee-fields" hidden>
+      <label>Должность<input name="position" value="Инженер"></label>
+      <label>Специализация<input name="specialization"></label>
+      <label>Код регистрации сотрудника<input type="password" name="secret_code"></label>
+    </div>
+    <label>Пароль (не менее 8 символов)<input type="password" name="password" minlength="8" required></label>
+    <div class="form-actions"><a class="button button-secondary" href="{{ url_for('login') }}">Отмена</a><button class="button button-primary" type="submit">Зарегистрироваться →</button></div>
+  </form>
+</div>
+{% endblock %}
